@@ -1,0 +1,29 @@
+#version 330 core
+
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec2 vertexUV;
+
+// Output data ; will be interpolated for each fragment.
+out vec2 UV;
+
+// Values that stay constant for the whole mesh.
+uniform mat4 MVP;
+uniform float rotacao;
+
+void main() {
+    float slowRotationSpeed = 0.5f; // Reduzindo a velocidade de rota��o
+
+    mat4 rotationMatrix = mat4(
+        cos(rotacao * slowRotationSpeed), 0.0, -sin(rotacao * slowRotationSpeed), 0.0, //não ha rotacao em torno do eixo do x
+        0.0, 1.0, 0.0, 0.0,                                                            //coordenada do y(1,0)
+        sin(rotacao * slowRotationSpeed), 0.0, cos(rotacao * slowRotationSpeed), 0.0,  //não há rotacao em torno do eixo do z
+        0.0, 0.0, 0.0, 1.0                                                             //não há operações de translação
+    );
+
+    // Output position of the vertex, in clip space : MVP * position
+    gl_Position = MVP * rotationMatrix * vec4(vertexPosition_modelspace, 1);
+
+    // UV of the vertex. No special space for this one.
+    UV = vertexUV;
+}
